@@ -31,6 +31,7 @@ async function run() {
     // Send a ping to confirm a successful connection
     
     const foodItemsCollection = client.db('Restaurant_Management').collection('AllFoodItems')
+    const feedbackCollection = client.db('Restaurant_Management').collection('Feedbacks')
 
     app.get('/allFoods',async (req,res)=>{
         const allFoods = await foodItemsCollection.find().toArray()
@@ -47,6 +48,12 @@ async function run() {
         const data = req.body
         const addFood = await foodItemsCollection.insertOne(data)
         res.send(addFood)
+    })
+
+    app.post('/addFeedback',async (req,res)=>{
+        const data = req.body
+        const addFeedback = await feedbackCollection.insertOne(data)
+        res.send(addFeedback)
     })
 
     await client.db("admin").command({ ping: 1 });
