@@ -37,6 +37,12 @@ async function run() {
         res.send(allFoods)
     })
 
+    app.get('/myFoods/:email',async (req,res)=>{
+        const {email} = req.params
+        const myFoods = await foodItemsCollection.find({email}).toArray()
+        res.send(myFoods)
+    })
+
     app.post('/addFood',async (req,res)=>{
         const data = req.body
         const addFood = await foodItemsCollection.insertOne(data)
