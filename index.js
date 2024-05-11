@@ -44,6 +44,11 @@ async function run() {
         res.send(myFoods)
     })
 
+    app.get('/allFeedbacks', async (req,res)=>{
+      const allFeedbacks = await feedbackCollection.find().toArray()
+      res.send(allFeedbacks)
+    })
+
     app.post('/addFood',async (req,res)=>{
         const data = req.body
         const addFood = await foodItemsCollection.insertOne(data)
