@@ -1,5 +1,6 @@
 const express = require('express')
 const cors = require('cors')
+require('dotenv').config()
 
 const port = process.env.PORT || 5000
 const app = express()
@@ -12,7 +13,7 @@ app.use(cors({
 
 
 const { MongoClient, ServerApiVersion } = require('mongodb');
-const uri = "mongodb+srv://shabusiness035:<password>@databases1.utppk3d.mongodb.net/?retryWrites=true&w=majority&appName=databases1";
+const uri = `mongodb+srv://${process.env.USER_DB}:<password>@databases1.utppk3d.mongodb.net/?retryWrites=true&w=majority&appName=databases1`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -28,9 +29,6 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     // await client.connect();
     // Send a ping to confirm a successful connection
-
-    
-
 
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
