@@ -30,6 +30,7 @@ async function run() {
     // await client.connect();
     // Send a ping to confirm a successful connection
     
+    const usersCollection = client.db('Restaurant_Management').collection('Users')
     const foodItemsCollection = client.db('Restaurant_Management').collection('AllFoodItems')
     const feedbackCollection = client.db('Restaurant_Management').collection('Feedbacks')
     const purchaseItemsCollection = client.db('Restaurant_Management').collection('PurchaseItems')
@@ -80,6 +81,12 @@ async function run() {
       const {email} = req.params
       const myPurchasedFoods = await purchaseItemsCollection.find({email}).toArray()
       res.send(myPurchasedFoods)
+    })
+
+    app.post('/addUser',async(req,res)=>{
+      const data = req.body
+      const addData = await usersCollection.insertOne(data)
+      res.send(addData)
     })
 
     app.post('/addFood',async (req,res)=>{
