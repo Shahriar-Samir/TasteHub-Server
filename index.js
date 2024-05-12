@@ -92,6 +92,26 @@ async function run() {
         res.send(addPurchaseData)
     })
 
+    app.put('/updateFood/:id',async(req,res)=>{
+      const {id} =  req.params
+      const data = req.body
+      const options = {uprest:true}
+      const updatedData = {
+        $set:{
+           foodName: data.foodName,
+           foodImage: data.foodImage,
+           foodCategory: data.foodCategory,
+           quantity: data.quantity,
+           price: data.price,
+           foodOrigin: data.foodOrigin,
+           description: data.description,
+        }
+      }
+
+      const allFoods = await foodItemsCollection.updateOne({_id: new ObjectId(id)},updatedData,options)
+      res.send(allFoods)
+    })
+
     app.delete('/deletePurchaseItem/:id', async(req,res)=>{
         const {id} = req.params
         const deleteItem = await purchaseItemsCollection.deleteOne({_id: new ObjectId(id)})
