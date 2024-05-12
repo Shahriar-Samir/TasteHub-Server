@@ -55,6 +55,13 @@ async function run() {
       const allFeedbacks = await feedbackCollection.find().toArray()
       res.send(allFeedbacks)
     })
+    app.get('/topPurchasedItems', async (req,res)=>{
+      const topFoods = await foodItemsCollection.aggregate([
+        {$sort: {purchased:-1}},
+        {$limit: 6}
+      ]).toArray()
+      res.send(topFoods)
+    })
 
     app.post('/addFood',async (req,res)=>{
         const data = req.body
@@ -73,7 +80,7 @@ async function run() {
         const {foodId,quantity} = purchaseData
         await foodItemsCollection.updateOne(
           {_id: new ObjectId(foodId)},
-          {$inc: {quantity: -quantity}}
+          {$inc: {quantity: -quantity, purchased: +quantity}}
         )
         const addPurchaseData = await purchaseItemsCollection.insertOne(purchaseData)
         res.send(addPurchaseData)
