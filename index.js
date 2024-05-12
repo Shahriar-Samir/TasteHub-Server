@@ -63,6 +63,19 @@ async function run() {
       res.send(topFoods)
     })
 
+    app.get('/searchFood/:search',async(req,res)=>{
+          const searchValue = req.params.search
+          if(searchValue === 'false'){
+            const foodItem = await foodItemsCollection.find().toArray()
+            res.send(foodItem)
+          }
+          else{
+           const foodItem = await foodItemsCollection.find({foodName:{$regex: new RegExp(searchValue,'i')}}).toArray()
+           res.send(foodItem)
+          }
+    })
+
+
     app.get('/myPurchasedItems/:email', async (req,res)=>{
       const {email} = req.params
       const myPurchasedFoods = await purchaseItemsCollection.find({email}).toArray()
