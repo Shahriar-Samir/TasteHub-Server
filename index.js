@@ -32,6 +32,7 @@ async function run() {
     
     const foodItemsCollection = client.db('Restaurant_Management').collection('AllFoodItems')
     const feedbackCollection = client.db('Restaurant_Management').collection('Feedbacks')
+    const purchaseItemsCollection = client.db('Restaurant_Management').collection('PurchaseItems')
 
     app.get('/allFoods',async (req,res)=>{
         const allFoods = await foodItemsCollection.find().toArray()
@@ -65,6 +66,17 @@ async function run() {
         const data = req.body
         const addFeedback = await feedbackCollection.insertOne(data)
         res.send(addFeedback)
+    })
+
+    app.post('/addPurchaseItem', async(req,res)=>{
+        const purchaseData = req.body
+        const {foodId,quantity} = purchaseData
+        await foodItemsCollection.updateOne(
+          {_id: new ObjectId(foodId)},
+          {$inc: {quantity: -quantity}}
+        )
+        const addPurchaseData = await purchaseItemsCollection.insertOne(purchaseData)
+        res.send(addPurchaseData)
     })
 
     await client.db("admin").command({ ping: 1 });
