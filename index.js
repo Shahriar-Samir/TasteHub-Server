@@ -136,25 +136,45 @@ async function run() {
       }
     })
 
-    app.post('/addUser',async(req,res)=>{
-      const data = req.body
-      const addData = await usersCollection.insertOne(data)
-      res.send(addData)
+    app.post('/addUser',verifyToken,async(req,res)=>{
+      if(req.user.email !== req.body.email){
+        return res.status(403).send({message: 'forbidden access'})
+      } 
+      else{
+        const data = req.body
+        const addData = await usersCollection.insertOne(data)
+        res.send(addData)
+      }
     })
 
-    app.post('/addFood',async (req,res)=>{
+    app.post('/addFood',verifyToken,async (req,res)=>{
+      if(req.user.email !== req.body.email){
+        return res.status(403).send({message: 'forbidden access'})
+      } 
+      else{
         const data = req.body
         const addFood = await foodItemsCollection.insertOne(data)
         res.send(addFood)
+      }
     })
 
-    app.post('/addFeedback',async (req,res)=>{
+    app.post('/addFeedback',verifyToken,async (req,res)=>{
+      if(req.user.email !== req.body.email){
+        return res.status(403).send({message: 'forbidden access'})
+      } 
+      else{
         const data = req.body
         const addFeedback = await feedbackCollection.insertOne(data)
         res.send(addFeedback)
+      }
+
     })
 
-    app.post('/addPurchaseItem', async(req,res)=>{
+    app.post('/addPurchaseItem',verifyToken,async(req,res)=>{
+      if(req.user.email !== req.body.email){
+        return res.status(403).send({message: 'forbidden access'})
+      } 
+      else{
         const purchaseData = req.body
         const {foodId,quantity} = purchaseData
         await foodItemsCollection.updateOne(
@@ -163,32 +183,44 @@ async function run() {
         )
         const addPurchaseData = await purchaseItemsCollection.insertOne(purchaseData)
         res.send(addPurchaseData)
-    })
-
-    app.put('/updateFood/:id',async(req,res)=>{
-      const {id} =  req.params
-      const data = req.body
-      const options = {uprest:true}
-      const updatedData = {
-        $set:{
-           foodName: data.foodName,
-           foodImage: data.foodImage,
-           foodCategory: data.foodCategory,
-           quantity: data.quantity,
-           price: data.price,
-           foodOrigin: data.foodOrigin,
-           description: data.description,
-        }
       }
-
-      const allFoods = await foodItemsCollection.updateOne({_id: new ObjectId(id)},updatedData,options)
-      res.send(allFoods)
+ 
     })
 
-    app.delete('/deletePurchaseItem/:id', async(req,res)=>{
+    app.put('/updateFood/:id',verifyToken,async(req,res)=>{
+      if(req.user.email !== req.body.email){
+        return res.status(403).send({message: 'forbidden access'})
+      } 
+      else{
+        const {id} =  req.params
+        const data = req.body
+        const options = {uprest:true}
+        const updatedData = {
+          $set:{
+             foodName: data.foodName,
+             foodImage: data.foodImage,
+             foodCategory: data.foodCategory,
+             quantity: data.quantity,
+             price: data.price,
+             foodOrigin: data.foodOrigin,
+             description: data.description,
+          }
+        }
+  
+        const allFoods = await foodItemsCollection.updateOne({_id: new ObjectId(id)},updatedData,options)
+        res.send(allFoods)
+      }
+    })
+
+    app.delete('/deletePurchaseItem/:id',verifyToken,async(req,res)=>{
+      if(req.user.email !== req.query.email){
+        return res.status(403).send({message: 'forbidden access'})
+      } 
+      else{
         const {id} = req.params
         const deleteItem = await purchaseItemsCollection.deleteOne({_id: new ObjectId(id)})
         res.send(deleteItem)
+      }
     })
 
     await client.db("admin").command({ ping: 1 });
