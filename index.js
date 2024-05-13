@@ -14,7 +14,25 @@ app.use(cors({
     origin: 'http://localhost:5173',
     credentials: true
 }))
+app.use(cookieParser())
 
+// verify token middleware
+const verifyToken = (req,res,next)=>{
+    const token = req.cookies?.token
+    if(!token){
+      return res.status(401).send({message: 'unauthorized access'})
+    }
+    else{
+      jwt.verify(token, process.env.TOKEN_SECRET, (err,decoded)=>{
+        if(err){
+           return res.send({message: 'unauthorized access'})
+        }
+        req.user = decoded
+        next()
+      })
+    }
+
+}
 
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@databases1.utppk3d.mongodb.net/?retryWrites=true&w=majority&appName=databases1`;
@@ -71,10 +89,15 @@ async function run() {
         res.send(foodItem)
     })
 
-    app.get('/myFoods/:email',async (req,res)=>{
-        const {email} = req.params
-        const myFoods = await foodItemsCollection.find({email}).toArray()
-        res.send(myFoods)
+    app.get('/myFoods/:email', verifyToken ,async (req,res)=>{
+        if(req.user.email !== req.params.email){
+          return res.status(403).send({message: 'forbidden access'})
+        }
+        else{
+          const {email} = req.params
+          const myFoods = await foodItemsCollection.find({email}).toArray()
+          res.send(myFoods)
+        }
     })
 
     app.get('/allFeedbacks', async (req,res)=>{
@@ -102,10 +125,15 @@ async function run() {
     })
 
 
-    app.get('/myPurchasedItems/:email', async (req,res)=>{
-      const {email} = req.params
-      const myPurchasedFoods = await purchaseItemsCollection.find({email}).toArray()
-      res.send(myPurchasedFoods)
+    app.get('/myPurchasedItems/:email', verifyToken, async (req,res)=>{
+      if(req.user.email !== req.params.email){
+        return res.status(403).send({message: 'forbidden access'})
+      } 
+      else{
+        const {email} = req.params
+        const myPurchasedFoods = await purchaseItemsCollection.find({email}).toArray()
+        res.send(myPurchasedFoods)
+      }
     })
 
     app.post('/addUser',async(req,res)=>{
