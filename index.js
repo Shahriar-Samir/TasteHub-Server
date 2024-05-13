@@ -1,5 +1,7 @@
 const express = require('express')
 const cors = require('cors')
+const jwt = require('jsonwebtoken')
+
 require('dotenv').config()
 
 const port = process.env.PORT || 5000
@@ -8,12 +10,18 @@ const app = express()
 // middlewares
 app.use(express.json())
 app.use(cors({
-    require: ['']
+    origin: 'http://localhost:5173',
+    credentials: true
 }))
 
 
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@databases1.utppk3d.mongodb.net/?retryWrites=true&w=majority&appName=databases1`;
+
+
+
+
+
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -34,6 +42,18 @@ async function run() {
     const foodItemsCollection = client.db('Restaurant_Management').collection('AllFoodItems')
     const feedbackCollection = client.db('Restaurant_Management').collection('Feedbacks')
     const purchaseItemsCollection = client.db('Restaurant_Management').collection('PurchaseItems')
+
+
+    // secure api
+    app.post('/jwt',async(req,res)=>{
+      const userData = req.body
+      const token = jwt.sign(userData,process.env.TOKEN_SECRET,{expiresIn: '1h'})
+      res.cookie('token',token, {httpOnly:true, secure:true, sameSite: 'none'})
+      .send()
+    })
+
+
+    // database related api routes
 
     app.get('/allFoods',async (req,res)=>{
         const allFoods = await foodItemsCollection.find().toArray()
