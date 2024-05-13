@@ -1,6 +1,7 @@
 const express = require('express')
 const cors = require('cors')
 const jwt = require('jsonwebtoken')
+const cookieParser = require('cookie-parser')
 
 require('dotenv').config()
 
@@ -52,6 +53,10 @@ async function run() {
       .send()
     })
 
+    app.post('/logout', async (req,res)=>{
+      res.clearCookie('token',{maxAge:0})
+      .send()
+    })
 
     // database related api routes
 
