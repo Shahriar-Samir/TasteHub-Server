@@ -11,7 +11,7 @@ const app = express()
 // middlewares
 app.use(express.json())
 app.use(cors({
-    origin: 'http://localhost:5173',
+    origin: ['http://localhost:5173','https://assignment-11-3cc1c.web.app'],
     credentials: true
 }))
 app.use(cookieParser())
@@ -62,6 +62,11 @@ async function run() {
     const feedbackCollection = client.db('Restaurant_Management').collection('Feedbacks')
     const purchaseItemsCollection = client.db('Restaurant_Management').collection('PurchaseItems')
 
+
+
+    app.get('/',(req,res)=>{
+        res.send('TasteHub Server')
+    })
 
     // secure api
     app.post('/jwt',async(req,res)=>{
