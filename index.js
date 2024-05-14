@@ -94,7 +94,7 @@ async function run() {
 
     app.get('/allFoodsCount',async (req,res)=>{
         const count = await foodItemsCollection.estimatedDocumentCount()
-        res.send(count)
+        res.send({count})
     })
     app.get('/allFoods',async (req,res)=>{
         const allFoods = await foodItemsCollection.find().toArray()
