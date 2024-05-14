@@ -92,6 +92,10 @@ async function run() {
 
     // database related api routes
 
+    app.get('/allFoodsCount',async (req,res)=>{
+        const count = await foodItemsCollection.estimatedDocumentCount()
+        res.send(count)
+    })
     app.get('/allFoods',async (req,res)=>{
         const allFoods = await foodItemsCollection.find().toArray()
         res.send(allFoods)
