@@ -97,8 +97,11 @@ async function run() {
         res.send({count})
     })
     app.get('/allFoods',async (req,res)=>{
-        const allFoods = await foodItemsCollection.find().toArray()
-        res.send(allFoods)
+        const {page,size} = req.query
+        const pageInt = parseInt(page)
+        const sizeInt = parseInt(size)
+        const foods = await foodItemsCollection.find().skip(pageInt*sizeInt).limit(sizeInt).toArray()
+        res.send(foods)
     })
 
     app.get('/foodDetails/:id',async (req,res)=>{
@@ -133,8 +136,7 @@ async function run() {
     app.get('/searchFood/:search',async(req,res)=>{
           const searchValue = req.params.search
           if(searchValue === 'false'){
-            const foodItem = await foodItemsCollection.find().toArray()
-            res.send(foodItem)
+            res.send([])
           }
           else{
            const foodItem = await foodItemsCollection.find({foodName:{$regex: new RegExp(searchValue,'i')}}).toArray()
