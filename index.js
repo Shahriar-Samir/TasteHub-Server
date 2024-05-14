@@ -11,10 +11,18 @@ const app = express()
 // middlewares
 app.use(express.json())
 app.use(cors({
-    origin: ['http://localhost:5173','https://assignment-11-3cc1c.web.app'],
+    origin: ['http://localhost:5173','https://assignment-11-3cc1c.web.app','https://assignment-11-3cc1c.firebaseapp.com'],
     credentials: true
 }))
 app.use(cookieParser())
+
+// cookies options
+const cookieOptions = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+};
+
 
 // verify token middleware
 const verifyToken = (req,res,next)=>{
@@ -40,6 +48,9 @@ const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@databas
 
 
 
+app.get('/',(req,res)=>{
+  res.send('TasteHub Server')
+})
 
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -64,15 +75,13 @@ async function run() {
 
 
 
-    app.get('/',(req,res)=>{
-        res.send('TasteHub Server')
-    })
+ 
 
     // secure api
     app.post('/jwt',async(req,res)=>{
       const userData = req.body
       const token = jwt.sign(userData,process.env.TOKEN_SECRET,{expiresIn: '1h'})
-      res.cookie('token',token, {httpOnly:true, secure:true, sameSite: 'none'})
+      res.cookie('token',token, cookieOptions)
       .send()
     })
 
