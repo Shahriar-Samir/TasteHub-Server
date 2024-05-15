@@ -242,6 +242,16 @@ async function run() {
         res.send(deleteItem)
       }
     })
+    app.delete('/deleteMyItem/:id',verifyToken,async(req,res)=>{
+      if(req.user.email !== req.query.email){
+        return res.status(403).send({message: 'forbidden access'})
+      } 
+      else{
+        const {id} = req.params
+        const deleteItem = await foodItemsCollection.deleteOne({_id: new ObjectId(id)})
+        res.send(deleteItem)
+      }
+    })
 
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
