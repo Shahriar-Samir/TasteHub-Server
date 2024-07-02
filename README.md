@@ -1,4 +1,4 @@
-TasteHub is a full-stack web project based on restaurant management and food related services where any can get fitness training from expert trainers.
+TasteHub is a full-stack web project based on restaurant management and food related services where anyone can buy foods, add food experience to the gallery page. I have faced server side security related problem during this project development and I have solved it using ai tools and by finding out codes from google, stack overflow etc.
 
 # Key Features
 - Visitors can access public routes such as homepage, all foods page, gallery page, , login and signup page of the website.
